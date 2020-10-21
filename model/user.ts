@@ -30,7 +30,7 @@ const UserSchema: Schema = new Schema({
     }
 });
 
-interface User extends Document {
+export interface IUser extends Document {
     name: string;
     email: string;
     password: string;
@@ -39,7 +39,4 @@ interface User extends Document {
     token: string;
     tokenExp: number;
 }
-const UserModel: Model<User> = model<User>('User', UserSchema);
-
-export default UserModel;
-
+export const User: Model<IUser> = model<IUser>('User', UserSchema);
