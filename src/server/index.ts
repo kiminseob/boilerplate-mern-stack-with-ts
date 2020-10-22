@@ -11,7 +11,7 @@ import {User, IUser} from '@model/user'
 
 mongoose.connect(config.mongoURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
         .then(()=>console.log('DB connected'))
-        .catch((err: any)=>console.log(err));
+        .catch((err: Error)=>console.log(err));
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true }));
@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.post('/api/users/register', (req: express.Request, res: express.Response)=>{
     const user: IUser = new User(req.body);
     
-    user.save((err: any, userData: IUser)=>{
+    user.save((err: Error, userData: IUser)=>{
         if(err) return res.json({success: false, err});
         return res.status(200).json({
             success:true

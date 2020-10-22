@@ -1,0 +1,3 @@
+interface Sequrity{
+    mongoURI: string
+}

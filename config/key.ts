@@ -1,7 +1,7 @@
-import prod, {Prod} from './prod';
-import dev, {Dev} from './dev';
+import prod from './prod';
+import dev from './dev';
 
-let config:(Prod | Dev);
+let config:Sequrity;
 
 if(process.env.NODE_ENV === 'production'){
     config = prod;

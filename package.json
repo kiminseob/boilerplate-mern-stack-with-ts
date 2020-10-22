@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "prestart": "rm -r dist/",
     "start": "tsc-watch --onSuccess \"node dist/src/server/index.js\""
   },
   "_moduleAliases": {
@@ -14,12 +15,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "module-alias": "^2.2.2",
     "mongoose": "^5.10.9"
   },
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.8",
     "@types/mongoose": "^5.7.36",

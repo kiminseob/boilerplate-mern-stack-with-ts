@@ -1,4 +1,6 @@
-import { Document, Schema, Model, model } from 'mongoose';
+import { Schema, Model, model, Document, HookNextFunction } from 'mongoose';
+import bcrypt from 'bcrypt';
+const saltRounds = 10;
 
 const UserSchema: Schema = new Schema({
     name: {
@@ -30,7 +32,7 @@ const UserSchema: Schema = new Schema({
     }
 });
 
-export interface IUser extends Document {
+export interface IUser extends Document{
     name: string;
     email: string;
     password: string;
@@ -39,4 +41,22 @@ export interface IUser extends Document {
     token: string;
     tokenExp: number;
 }
+
+UserSchema.pre('save', (next:HookNextFunction)=>{
+    const user:IUser = this!;
+
+    if(user.isModified('password')){
+        bcrypt.genSalt(saltRounds, (err:Error, salt:string)=>{
+            if(err) return next(err);
+    
+            bcrypt.hash(user.password, salt, (err:Error, hash:string)=>{
+                if(err) return next(err);
+                user.password = hash;
+            })
+        })
+    }else{
+        next();
+    }
+});
+
 export const User: Model<IUser> = model<IUser>('User', UserSchema);
