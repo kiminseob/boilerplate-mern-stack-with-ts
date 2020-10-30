@@ -1,9 +1,9 @@
 import { Schema, Model, model, Document, HookNextFunction } from 'mongoose';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { VerifyOptions } from 'jsonwebtoken';
 const saltRounds = 10;
 
-export interface IUser extends Document{
+export interface IUserDocument extends Document{
     name: string;
     email: string;
     password: string;
@@ -11,11 +11,16 @@ export interface IUser extends Document{
     role: number;
     token: string;
     tokenExp: number;
+}
+export interface IUser extends IUserDocument{
     comparePassword: (plainPassword:string, cb:Function) => void;
     generateToken: (cb:Function) => void;
 }
+export interface IUserModel extends Model<IUser>{
+    findByToken: (token:string, cb:Function) => void;
+}
 
-const UserSchema: Schema<IUser> = new Schema<IUser>({
+const UserSchema: Schema = new Schema({
     name: {
         type:String,
         maxlength:50
@@ -53,6 +58,7 @@ UserSchema.pre<IUser>('save', function(next:HookNextFunction){
             bcrypt.hash(this.password, salt, (err:Error, hash:string)=>{
                 if(err) return next(err);
                 this.password = hash;
+                next();
             })
         })
     }else{
@@ -76,4 +82,14 @@ UserSchema.methods.generateToken = function(cb:Function) {
     })
 }
 
-export const User: Model<IUser> = model<IUser>('User', UserSchema);
+UserSchema.statics.findByToken = function(token:string, cb:Function){
+    jwt.verify(token, 'secret', (err:Error | null, decode?:object)=>{
+       this.findOne({"_id":decode, "token": token}, (err:Error, user:IUser)=>{
+           if(err) return cb(err);
+           cb(null, user);
+       })
+    })
+}
+
+export const User:IUserModel = model<IUser, IUserModel>('User', UserSchema);
+export default User;

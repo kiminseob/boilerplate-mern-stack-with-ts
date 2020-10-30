@@ -7,7 +7,8 @@ import cookieParser from 'cookie-parser';
 
 import config from '@config/key';
 
-import {User, IUser} from '@model/user'
+import User, {IUser} from '@model/user';
+import { auth } from '@middleware/auth';
 
 mongoose.connect(config.mongoURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
         .then(()=>console.log('DB connected'))
@@ -17,18 +18,30 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true }));
 app.use(cookieParser());
 
+app.get("/api/user/auth", auth, (req: express.Request, res: express.Response)=>{
+    res.status(200).json({
+        _id: req.user._id,
+        isAuth: true,
+        email: req.user.email,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        role: req.user.role
+    });
+})
+
 app.post('/api/users/register', (req: express.Request, res: express.Response)=>{
     const user: IUser = new User(req.body);
     
     user.save((err: Error, userData: IUser)=>{
         if(err) return res.json({success: false, err});
         return res.status(200).json({
-            success:true
+            success:true,
+            userData: userData
         });
     });
 });
 
-app.post('api/user/login', (req:express.Request, res: express.Response)=>{
+app.post('/api/user/login', (req:express.Request, res: express.Response)=>{
     User.findOne({email: req.body.email}, (err:Error, user:IUser)=>{
         if(!user){
             return res.json({

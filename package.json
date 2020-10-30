@@ -9,7 +9,8 @@
   },
   "_moduleAliases": {
     "@model": "dist/model",
-    "@config": "dist/config"
+    "@config": "dist/config",
+    "@middleware":"dist/src/server/middleware"
   },
   "keywords": [],
   "author": "",
