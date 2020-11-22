@@ -10,7 +10,7 @@ import config from '@config/key';
 import User, {IUser} from '@model/user';
 import { auth } from '@middleware/auth';
 
-mongoose.connect(config.mongoURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(config.mongoURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
         .then(()=>console.log('DB connected'))
         .catch((err: Error)=>console.log(err));
 
@@ -66,6 +66,15 @@ app.post('/api/user/login', (req:express.Request, res: express.Response)=>{
         })
     })
 })
+
+app.get("/api/user/logout", auth, (req:express.Request, res:express.Response)=>{
+    User.findOneAndUpdate({_id: req.user._id, }, {token: ""}, (err, doc)=>{
+        if(err) return res.json({success: false, err});
+        return res.status(200).send({
+            success: true
+        })
+    });
+}) 
 
 app.get('/', (req: express.Request, res: express.Response)=>{
     res.send('Hello World');
