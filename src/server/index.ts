@@ -1,7 +1,7 @@
 import 'module-alias/register';
 import express from 'express';
 const app = express();
-const port = 3000;
+const port = 5000;
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 
