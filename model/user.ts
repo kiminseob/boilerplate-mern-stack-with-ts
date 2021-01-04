@@ -13,8 +13,8 @@ export interface IUserDocument extends Document{
     tokenExp: number;
 }
 export interface IUser extends IUserDocument{
-    comparePassword: (plainPassword:string, cb:Function) => void;
-    generateToken: (cb:Function) => void;
+    comparePassword: (plainPassword:string, cb:Function) => Function;
+    generateToken: (cb:Function) => Function;
 }
 export interface IUserModel extends Model<IUser>{
     findByToken: (token:string, cb:Function) => void;
@@ -67,7 +67,7 @@ UserSchema.pre<IUser>('save', function(next:HookNextFunction){
 });
 
 UserSchema.methods.comparePassword = function(plainPassword:string, cb:Function){
-    bcrypt.compare(plainPassword, this.password,(err:Error, isMatch:boolean)=>{
+    bcrypt.compare(plainPassword, this.password, (err:Error, isMatch:boolean)=>{
         if(err) return cb(err);
         cb(null, isMatch);
     });

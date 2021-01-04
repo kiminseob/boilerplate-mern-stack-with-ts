@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true }));
 app.use(cookieParser());
 
-app.get("/api/user/auth", auth, (req: express.Request, res: express.Response)=>{
+app.get("/api/users/auth", auth, (req: express.Request, res: express.Response)=>{
     res.status(200).json({
         _id: req.user._id,
         isAuth: true,
@@ -41,7 +41,7 @@ app.post('/api/users/register', (req: express.Request, res: express.Response)=>{
     });
 });
 
-app.post('/api/user/login', (req:express.Request, res: express.Response)=>{
+app.post('/api/users/login', (req:express.Request, res: express.Response)=>{
     User.findOne({email: req.body.email}, (err:Error, user:IUser)=>{
         if(!user){
             return res.json({
@@ -54,20 +54,20 @@ app.post('/api/user/login', (req:express.Request, res: express.Response)=>{
             if(!isMatch){
                 return res.json({ loginSuccess: false, message: "wrong password"});
             }
-        })
 
-        user.generateToken((err:Error, user:IUser)=>{
-            if(err) return res.status(400).send(err);
-            res.cookie("x_auth", user.token)
-                .status(200)
-                .json({
-                    loginSuccess: true
-                })
+            user.generateToken((err:Error, user:IUser)=>{
+                if(err) return res.status(400).send(err);
+                return res.cookie("x_auth", user.token)
+                    .status(200)
+                    .json({
+                        loginSuccess: true
+                    })
+            })
         })
     })
 })
 
-app.get("/api/user/logout", auth, (req:express.Request, res:express.Response)=>{
+app.get("/api/users/logout", auth, (req:express.Request, res:express.Response)=>{
     User.findOneAndUpdate({_id: req.user._id, }, {token: ""}, (err, doc)=>{
         if(err) return res.json({success: false, err});
         return res.status(200).send({
